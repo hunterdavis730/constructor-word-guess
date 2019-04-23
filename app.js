@@ -6,13 +6,20 @@ var axios = require('axios');
 var comedyMovies = ['Monty Python and the Holy Grail', 'Superbad', 'The Hangover', 'Step Brothers', 'The Other Guys', 'Dumb and Dumber', 'Pineapple Express', 'Happy Gilmore', 'Shaun of the Dead', 'Hot Fuzz'];
 var actionMovies = ['John Wick', 'The Dark Knight', 'The Bourne Ultimatum', 'Lethal Weapon', 'Saving Private Ryan', 'The Fugitive', 'Casino Royale', 'Die Hard', 'True Lies', 'Enemy of the State'];
 var scifiMovies = ['The Matrix', 'Edge of Tomorrow', 'Terminator Salvation', 'Minority Report', 'Inception', 'War of the Worlds', 'Ex Machina', 'Blade Runner', 'The Martian', 'Planet of the Apes']
+var comedyTV = ["Family Guy", "The Office", "Parks and Recreation", "Friends", "The Simpsons", "It's Always Sunny in Philidelphia", "How I Met Your Mother", "Seinfeld", "Arrested Development", "New Girl"]
+var actionTV = ["Game of Thrones", "Prison Break", "Breaking Bad", "Sons of Anarchy", "Smallville", "Band of Brothers", "Person of Interest", "Criminal Minds", "The Last Kingdom", "Jessica Jones"];
+var scifiTV = ["Westworld", "Stranger Things", "Black Mirror", "The Orville", "The Twilight Zone", "Falling Skies", "Quantum Leap", "Battlestar Galactica", "Star Trek The Next Generation", "Terra Nova"];
+
+
 var currentMovie = '';
 var movie;
 var wins = 0;
 var losses = 0;
 var guessesLeft = 16;
 var guessedLetters = [];
+var mediaType = '';
 
+var correctGuess = false;
 var wordGuessed = false;
 var user = '';
 
@@ -32,14 +39,17 @@ function displayMovie() {
 }
 
 function isGameOver() {
+
     var correct = 0;
     for (var i = 0; i < movie.letterBank.length; i++) {
 
         if (movie.letterBank[i].userGuessed === true) {
             correct++
+
         }
 
         if (correct === movie.letterBank.length) {
+
             return wordGuessed = true;
         }
     }
@@ -73,6 +83,9 @@ function promptGuess() {
                 console.log(movie.wordDisplay.join(' '))
 
                 isGameOver();
+
+
+
                 if (wordGuessed === false) {
                     guessesLeft--;
                     promptGuess();
@@ -108,13 +121,38 @@ function start() {
         },
         {
             type: "list",
-            message: "Choose a movie Genre!",
-            choices: ["Comedy", "Action", "Sci-Fi"],
-            name: "movieGenre"
+            message: "Choose a category!",
+            choices: ["Movies", "TV Shows"],
+            name: "choice"
         }
     ]).then(function (answers) {
-        var genre = answers.movieGenre;
+
         user = answers.userName;
+        switch (answers.choice) {
+            case "Movies":
+                mediaType = "movie";
+                showMovies();
+                break;
+            case "TV Shows":
+                mediaType = "show";
+                showTV();
+                break;
+
+        }
+    })
+}
+
+function showMovies() {
+    inquirer.prompt([{
+
+        type: "list",
+        message: "Choose a movie Genre!",
+        choices: ["Comedy", "Action", "Sci-Fi"],
+        name: "movieGenre"
+
+    }]).then(function (answers) {
+        var genre = answers.movieGenre;
+
 
         switch (genre) {
             case "Comedy":
@@ -139,10 +177,44 @@ function start() {
     })
 }
 
+function showTV() {
+    inquirer.prompt([{
+        type: "list",
+        message: "Choose a TV Show Genre!",
+        choices: ["Comedy", "Action", "Sci-Fi"],
+        name: "genre"
+    }]).then(function (answers) {
+        var genre = answers.genre;
+
+
+        switch (genre) {
+            case "Comedy":
+                getMovie(comedyTV)
+                displayMovie();
+
+                promptGuess();
+                break;
+            case "Action":
+                getMovie(actionTV)
+                displayMovie();
+                promptGuess();
+                break;
+            case "Sci-Fi":
+                getMovie(scifiTV)
+                displayMovie();
+                promptGuess();
+                break;
+            default:
+                console.log("Please try again")
+        }
+    })
+}
+
+
 function promptMovie() {
     inquirer.prompt([{
         type: "confirm",
-        message: `Would you like to see movie details for ${currentMovie}?`,
+        message: `Would you like to see ${mediaType} details for ${currentMovie}?`,
         name: "answer"
     }]).then(function (res) {
         if (!res.answer) {
@@ -199,30 +271,22 @@ function newRound() {
 
         {
             type: "list",
-            message: "Choose a movie Genre!",
-            choices: ["Comedy", "Action", "Sci-Fi"],
-            name: "movieGenre"
+            message: "Choose a category!",
+            choices: ["Movies", "TV Shows"],
+            name: "choice"
         }
     ]).then(function (answers) {
-        var genre = answers.movieGenre;
-        switch (genre) {
-            case "Comedy":
-                getMovie(comedyMovies)
-                displayMovie();
-                promptGuess();
+
+        switch (answers.choice) {
+            case "Movies":
+                mediaType = "movie";
+                showMovies();
                 break;
-            case "Action":
-                getMovie(actionMovies)
-                displayMovie();
-                promptGuess();
+            case "TV Shows":
+                mediaType = "show";
+                showTV();
                 break;
-            case "Sci-Fi":
-                getMovie(scifiMovies)
-                displayMovie();
-                promptGuess();
-                break;
-            default:
-                console.log("Please try again")
+
         }
     })
 }

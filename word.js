@@ -40,17 +40,5 @@ Word.prototype.guessLetter = function (event) {
     this.displayWord()
 }
 
-// var movie = new Word('Revenge of the Sith');
-
-// movie.addLetters()
-// movie.configLetters()
-// movie.displayWord()
-
-// console.log(movie.wordDisplay.join(' '))
-
-// movie.guessLetter('e')
-// console.log(movie.letterBank)
-// console.log(movie.wordDisplay.join(' '))
-
 
 module.exports = Word;
