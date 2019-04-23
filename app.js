@@ -209,7 +209,6 @@ function newRound() {
             case "Comedy":
                 getMovie(comedyMovies)
                 displayMovie();
-                console.log(movie)
                 promptGuess();
                 break;
             case "Action":
