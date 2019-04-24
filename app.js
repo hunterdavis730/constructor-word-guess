@@ -15,13 +15,15 @@ var currentMovie = '';
 var movie;
 var wins = 0;
 var losses = 0;
-var guessesLeft = 16;
+var guessesLeft;
 var guessedLetters = [];
 var mediaType = '';
-
+var correctChecker = 0;
 var correctGuess = false;
 var wordGuessed = false;
 var user = '';
+var possibleChar;
+
 
 function getMovie(event) {
     var num = Math.floor(Math.random() * 10);
@@ -35,11 +37,26 @@ function displayMovie() {
     movie.configLetters();
     movie.displayWord();
     console.log(movie.wordDisplay.join(' '))
+    configCheck();
+    possibleChar = movie.letterBank.length - correctChecker;
+    getGuesses(possibleChar);
 
 }
 
-function isGameOver() {
+function getGuesses(event) {
+    if (event < 7) {
+        guessesLeft = 6;
+    } else if (event < 12) {
+        guessesLeft = 8;
+    } else if (event < 16) {
+        guessesLeft = 10;
+    } else {
+        guessesLeft = 12;
+    }
+}
 
+function isGameOver() {
+    correctGuess = false;
     var correct = 0;
     for (var i = 0; i < movie.letterBank.length; i++) {
 
@@ -48,14 +65,37 @@ function isGameOver() {
 
         }
 
+
         if (correct === movie.letterBank.length) {
 
             return wordGuessed = true;
         }
     }
 
+    if (correct > correctChecker) {
+        correctGuess = true;
+        correctChecker = correct
+
+    }
+
 }
 
+function configCheck() {
+    for (var i = 0; i < movie.letterBank.length; i++) {
+
+        if (movie.letterBank[i].userGuessed === true) {
+            correctChecker++
+
+        }
+    }
+}
+
+function subGuess() {
+
+    if (!correctGuess) {
+        return guessesLeft--;
+    }
+}
 
 function promptGuess() {
     if (guessesLeft === 0) {
@@ -83,11 +123,11 @@ function promptGuess() {
                 console.log(movie.wordDisplay.join(' '))
 
                 isGameOver();
-
+                subGuess();
 
 
                 if (wordGuessed === false) {
-                    guessesLeft--;
+
                     promptGuess();
                 } else {
                     console.log(`Congratulations ${user} you guessed the movie!`)
@@ -258,6 +298,7 @@ function playAgain() {
         if (!res.play) {
             console.log("Okay enjoy the rest of your day!")
         } else {
+            correctChecker = 0;
             guessedLetters = [];
             guessesLeft = 16;
             wordGuessed = false;
